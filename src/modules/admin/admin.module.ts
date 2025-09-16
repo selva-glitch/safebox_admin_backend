@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminController } from '../../controller/v1/admin/admin.controller';
+import { PartnerController } from 'src/controller/v1/partner/partner.controller';
+import { PartnerService } from 'src/services/partner/partner.service';
 import { AdminService } from '../../services/admin/admin.service';
 import { Admin } from "../../entities/admin/admin.entity";
+import { Partner } from "../../entities/partner/partner.entity"
 import { JwtModule } from '@nestjs/jwt';
 
 /**
@@ -26,14 +29,14 @@ import { JwtModule } from '@nestjs/jwt';
  */
 @Module({
     imports: [TypeOrmModule.forFeature(
-        [Admin]),
+        [Admin, Partner]),
     JwtModule.register({
         secret: process.env.JWT_SECRET || 'yourSecretKey',
         signOptions: { expiresIn: '1h' },
     }),
     ],
-    controllers: [AdminController],
-    providers: [AdminService],
-    exports: [AdminService]
+    controllers: [AdminController, PartnerController],
+    providers: [AdminService, PartnerService],
+    exports: [AdminService, PartnerService], 
 })
 export class AdminModule { }
