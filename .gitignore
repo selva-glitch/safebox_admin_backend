@@ -1,0 +1,6 @@
+.env
+.idea/
+node_modules/
+dist/
+.env_dev
+storage/logs/

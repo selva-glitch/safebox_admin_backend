@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  safebox-admin-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: safebox-admin-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
