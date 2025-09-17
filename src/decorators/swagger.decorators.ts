@@ -14,7 +14,6 @@ import { ListParamsDto } from '../validation/partner.validation'
 
 export function SwaggerAdminLogin() {
   return applyDecorators(
-    ApiTags('Admin'),
     ApiOperation({ summary: 'Admin Login' }),
     ApiBody({ type: AdminLoginDto }), 
     ApiResponse({ status: 200, description: 'List of partners', type: LoginResponseType })
@@ -23,8 +22,7 @@ export function SwaggerAdminLogin() {
 
 export function SwaggerListPartners() {
   return applyDecorators(
-    ApiTags('Partners'),
-    ApiBearerAuth(),
+    ApiBearerAuth('access-token'),
     ApiQuery({ type: ListParamsDto }), 
     ApiOperation({ summary: 'List all partners' }),
     ApiResponse({ status: 200, description: 'List of partners', type: ListPartnersResponse }),

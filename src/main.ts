@@ -31,10 +31,18 @@ async function bootstrap() {
 
 
   const config = new DocumentBuilder()
-    .setTitle('Partner API')
+    .setTitle('SafeBox Admin - API')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token', // <-- security name (must match ApiBearerAuth)
+    )
     .setDescription('API for managing partners')
     .setVersion('1.0')
-    .addTag('partners')
+    .addTag('partner')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
