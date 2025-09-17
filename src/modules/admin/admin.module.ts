@@ -7,32 +7,19 @@ import { AdminService } from '../../services/admin/admin.service';
 import { Admin } from "../../entities/admin/admin.entity";
 import { Partner } from "../../entities/partner/partner.entity"
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-/**
- * This module is responsible for handling operations related to cities.
- * It provides functionalities through its services and controllers for
- * managing city-related data.
- *
- * Imports:
- * - Configured to connect with the specified database entities:
- *   City, State, StateMaster, Country, CountryMaster using TypeOrmModule.
- *
- * Controllers:
- * - CityController: Manages REST API endpoints for city-related operations.
- *
- * Providers:
- * - CityService: Provides core logic and methods for handling city-related data.
- * - UsersService: Supports operations related to users interacting with city data.
- *
- * Exports:
- * - CityService: Allows other modules to access city management logic and functionality.
- */
 @Module({
     imports: [TypeOrmModule.forFeature(
         [Admin, Partner]),
-    JwtModule.register({
-        secret: process.env.JWT_SECRET || 'yourSecretKey',
-        signOptions: { expiresIn: '1h' },
+    ConfigModule.forRoot(), // loads .env
+   JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h', algorithm: 'HS256' },
+      }),
     }),
     ],
     controllers: [AdminController, PartnerController],

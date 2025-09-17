@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Admin } from '../../entities/admin/admin.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponseType } from '../../interfaces/admin.interface';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AdminService {

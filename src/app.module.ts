@@ -7,7 +7,7 @@ import { databaseConfig } from "./config/database";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RequestContextMiddleware } from "./middleware/request.middleware";
 import {AdminModule} from "./modules/admin/admin.module";
-
+import {AuthModule} from "./modules/auth.module";
 
 @Module({
     imports: [
@@ -27,7 +27,9 @@ import {AdminModule} from "./modules/admin/admin.module";
             },
             inject: [ConfigService],
         }),
-        AdminModule
+        AuthModule,
+        AdminModule,
+        
     ],
     controllers: [AppController,],
     providers: [AppService]

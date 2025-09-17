@@ -6,6 +6,7 @@ import { ListParamsDto } from '../../validation/partner.validation';
 import {ListPartners} from '../../interfaces/partner.interface'
 
 
+
 @Injectable()
 export class PartnerService {
   constructor(

@@ -1,11 +1,12 @@
-import { Controller, HttpCode, Post, Req, Res, Get, Param } from '@nestjs/common';
+import { Controller, HttpCode, Post, Req, Res, Get, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PartnerService } from '../../../services/partner/partner.service';
 import { ListParamsDto } from '../../../validation/partner.validation'
 import { SwaggerListPartners } from '../../../decorators/swagger.decorators'
 import { CommonController } from '../../common.controller';
+import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 
-
+@UseGuards(JwtAuthGuard)
 @Controller('/v1/partners')
 export class PartnerController extends CommonController {
   constructor(private readonly partnerService: PartnerService) {
