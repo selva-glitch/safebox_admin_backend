@@ -70,11 +70,12 @@ export class CommonController {
      * @returns {successResponseType} Standardized success response
      */
     protected successResponse(message: string, data: any): successResponseType {
+        data.status = data.status ?? true
         if (data.status) {
             return { 
                 status: true, 
                 message, 
-                data: data.data, 
+                data: data.data ?? data, 
                 error: data.error ?? false 
             };
         }

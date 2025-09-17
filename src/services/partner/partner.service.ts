@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository,Like, FindOptionsWhere  } from 'typeorm';
+import { Repository, Like, FindOptionsWhere } from 'typeorm';
 import { Partner } from '../../entities/partner/partner.entity';
-import{ListParamsType} from '../../interfaces/partner.interface'
+import { ListParamsDto } from '../../validation/partner.validation';
+import {ListPartners} from '../../interfaces/partner.interface'
+
 
 @Injectable()
 export class PartnerService {
   constructor(
     @InjectRepository(Partner)
     private readonly partnerRepo: Repository<Partner>,
-  ) {}
+  ) { }
 
   async create(data: Partial<Partner>) {
     const partner = this.partnerRepo.create(data);
@@ -25,7 +27,12 @@ export class PartnerService {
     return partner?.comparePassword(password) ?? false;
   }
 
-   async listPartners({ page, limit, search, role, status }: ListParamsType) {
+  async listPartners(query: ListParamsDto): Promise<ListPartners> {
+
+    let { page, limit, search, role, status } = query;
+    page = parseInt((page ?? '1') as string) || 1;
+    limit = parseInt((limit ?? '10') as string) || 10;
+
     const where: FindOptionsWhere<Partner>[] = [];
 
     if (search) {
@@ -47,10 +54,10 @@ export class PartnerService {
     });
 
     return {
-      partners,
+      partners : partners,
       totalPages: Math.ceil(total / limit),
       currentPage: page,
-      total,
+      total
     };
   }
 }

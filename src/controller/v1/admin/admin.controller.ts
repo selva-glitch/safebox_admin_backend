@@ -4,6 +4,10 @@ import { AdminService } from '../../../services/admin/admin.service';
 import { AdminLoginDto } from '../../../validation/admin.validation';
 import { CommonController } from '../../common.controller';
 import { LoginResponseType } from '../../../interfaces/admin.interface';
+import {SwaggerAdminLogin} from '../../../decorators/swagger.decorators'
+
+
+
 
 @Controller('v1/admin')
 export class AdminController extends CommonController {
@@ -22,6 +26,7 @@ export class AdminController extends CommonController {
      * @returns {Promise<Response>} JSON response containing login status and data
      */
     @Post('/login')
+    @SwaggerAdminLogin()
     @HttpCode(200)
     async adminLogin(@Req() req: Request, @Res() res: Response) {
         try {
