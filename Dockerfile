@@ -20,24 +20,26 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and env
 COPY package*.json ./
 COPY .env ./
 
-# Install production dependencies only
+# Install only production dependencies
 RUN npm ci --only=production
 
-# Copy built application from builder stage
+# Copy built application
 COPY --from=builder /app/dist ./dist
 
 # Copy necessary files
 COPY tsconfig.json ./
 
-# Expose the port (typical for NestJS applications)
+# Expose NestJS port
 EXPOSE 3000
 
-# Set NODE_ENV
+# Set environment
 ENV NODE_ENV=production
 
-# Start the application
+RUN apk add --no-cache mysql-client
+
+# Start application
 CMD ["npm", "run", "start:prod"]

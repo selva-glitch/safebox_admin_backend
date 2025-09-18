@@ -31,12 +31,12 @@ const parseSSL = (sslStr: string | undefined): boolean =>
  * Extracts MySQL connection config from environment variables.
  */
 const getEnvConfig = (): DatabaseConnectionConfig => ({
-  host: process.env['MYSQL_HOST'] || 'localhost',
-  port: parsePort(process.env['MYSQL_PORT']),
-  username: process.env['MYSQL_USER'] || 'root',
-  password: process.env['MYSQL_PASSWORD'] || '',
-  database: process.env['MYSQL_DB'] || 'nest_demo',
-  ssl: parseSSL(process.env['MYSQL_SSL']),
+  host: process.env['DB_HOST'] || 'localhost',
+  port: parsePort(process.env['DB_PORT']),
+  username: process.env['DB_USER'] || 'root',
+  password: process.env['DB_PASSWORD'] || '',
+  database: process.env['DB_NAME'] || 'nest_demo',
+  ssl: parseSSL(process.env['DB_SSL']),
 });
 
 /**

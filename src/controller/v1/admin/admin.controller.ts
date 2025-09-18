@@ -28,7 +28,7 @@ export class AdminController extends CommonController {
     @Post('/login')
     @SwaggerAdminLogin()
     @HttpCode(200)
-    async adminLogin(@Req() req: Request, @Res() res: Response) {
+    async adminLogin(@Req() req: Request, @Res() res: Response): Promise<Response> {
         try {
             // Validate request body using AdminLoginDto
             const [params, error, isError] = this.requestValidation(AdminLoginDto, 'Post', req['context'].body);

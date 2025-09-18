@@ -1,4 +1,46 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Partner } from '../entities/partner/partner.entity';
+
+
+class BulkLicenseResponse {
+  @ApiProperty() premiumTotal: number;
+  @ApiProperty() premiumUsed: number;
+  @ApiProperty() goldTotal: number;
+  @ApiProperty() goldUsed: number;
+}
+
+class PolicyResponse {
+  @ApiProperty() base: number;
+
+  @ApiProperty({ type: [Number] })
+  discountedBands: number[];
+}
+
+class ResellPolicyResponse {
+  @ApiProperty({ type: PolicyResponse })
+  premium: PolicyResponse;
+
+  @ApiProperty({ type: PolicyResponse })
+  gold: PolicyResponse;
+}
+
+class PricingConfigResponse {
+  @ApiProperty() mrp: number;
+
+  @ApiProperty({ type: [Number] })
+  allowedDiscounts: number[];
+
+  @ApiProperty() base: number;
+}
+
+class KPIsResponse {
+  @ApiProperty() clientsAdded: number;
+  @ApiProperty() linksGenerated: number;
+  @ApiProperty() licensesSold: number;
+  @ApiProperty() totalRevenue: number;
+  @ApiProperty() giftedThisMonth: number;
+  @ApiProperty() totalGifted: number;
+}
 
 export class PartnerResponse {
   @ApiProperty() id: number;
@@ -10,45 +52,20 @@ export class PartnerResponse {
   @ApiProperty() role: string;
   @ApiProperty() status: string;
 
-  @ApiProperty()
-  bulkLicense: {
-    premiumTotal: number;
-    premiumUsed: number;
-    goldTotal: number;
-    goldUsed: number;
-  };
+  @ApiProperty({ type: BulkLicenseResponse })
+  bulkLicense: BulkLicenseResponse;
 
-  @ApiProperty()
-  resellPolicy: {
-    base: number;
-    bands: {
-      discountedBands: any;
-    };
-  };
+  @ApiProperty({ type: ResellPolicyResponse })
+  resellPolicy: ResellPolicyResponse;
 
-  @ApiProperty()
-  premiumPricing: {
-    mrp: number;
-    allowedDiscounts: any;
-    base: number;
-  };
+  @ApiProperty({ type: PricingConfigResponse })
+  premiumPricing: PricingConfigResponse;
 
-  @ApiProperty()
-  goldPricing: {
-    mrp: number;
-    allowedDiscounts: any;
-    base: number;
-  };
+  @ApiProperty({ type: PricingConfigResponse })
+  goldPricing: PricingConfigResponse;
 
-  @ApiProperty()
-  kpis: {
-    clientsAdded: number;
-    linksGenerated: number;
-    licensesSold: number;
-    totalRevenue: number;
-    giftedThisMonth: number;
-    totalGifted: number;
-  };
+  @ApiProperty({ type: KPIsResponse })
+  kpis: KPIsResponse;
 
   @ApiProperty() partnerId: string;
 
@@ -69,10 +86,29 @@ export class ListPartners {
 
 
 export class ListPartnersResponse {
-   @ApiProperty({ type: [ListPartners] }) data: ListPartners;
-   @ApiProperty() status: boolean;
-   @ApiProperty()message: string;
+  @ApiProperty({ type: [ListPartners] }) data: ListPartners;
+  @ApiProperty() status: boolean;
+  @ApiProperty()message: string;
   @ApiProperty() error: boolean;
   @ApiProperty() code:number;
-};
+}
+
+
+export class GetPartnerResponse {
+  @ApiProperty({ type: [ListPartners] }) data?: PartnerResponse;
+  @ApiProperty() status: boolean;
+  @ApiProperty()message: string;
+  @ApiProperty() error: boolean;
+  @ApiProperty() code:number;
+}
+
+
+export class AddPartnerResponse {
+  @ApiProperty({ type: [PartnerResponse] }) data?: PartnerResponse;
+  @ApiProperty() status: boolean;
+  @ApiProperty()message: string;
+  @ApiProperty() error: boolean;
+  @ApiProperty() code:number;
+}
+
 

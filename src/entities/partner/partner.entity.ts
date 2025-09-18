@@ -10,18 +10,30 @@ class BulkLicense {
   @Column({ default: 0 }) goldUsed: number;
 }
 
+
 class ResellBand {
-  @Column("simple-array") discountedBands: number[];
+  @Column("simple-array", { nullable: true })
+  discountedBands: number[];  
+}
+
+class Policy {
+  @Column({ default: 0 })
+  base: number;
+
+  @Column("simple-array", { nullable: true })
+  discountedBands: number[];
 }
 
 class ResellPolicy {
-  @Column({ type: 'enum', enum: [499, 599], default: 499 }) base: number;
-  @Column(type => ResellBand) bands: ResellBand;
-}
+  @Column(type => Policy)
+  premium: Policy;
 
+  @Column(type => Policy)
+  gold: Policy;
+}
 class PricingConfig {
   @Column({ default: 999 }) mrp: number;
-  @Column("simple-array") allowedDiscounts: number[];
+  @Column("simple-array", { default: null }) allowedDiscounts: number[];
   @Column({ default: 799 }) base: number;
 }
 
@@ -70,11 +82,16 @@ export class Partner {
 
   @BeforeInsert()
   async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 12);
-    this.partnerId = this.partnerId || 'PRT' + Date.now().toString().slice(-8);
+    this.password = '';
+    //this.partnerId = this.partnerId || 'PRT' + Date.now().toString().slice(-8);
   }
 
   async comparePassword(candidate: string): Promise<boolean> {
     return bcrypt.compare(candidate, this.password);
+  }
+
+  @BeforeInsert()
+  async createPartnerId(){
+     this.partnerId = this.partnerId || 'PRT' + Date.now().toString().slice(-8);
   }
 }
