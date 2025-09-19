@@ -6,7 +6,6 @@ import { Request, Response, NextFunction } from 'express';
 export class RequestContextMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { body, query, params } = req;
-    console.log(req.headers);
     // Attach a custom object to the request
     req['context'] = {
       timestamp: new Date().toISOString(),

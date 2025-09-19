@@ -112,3 +112,25 @@ export class AddPartnerResponse {
 }
 
 
+
+export class UpdateBulkLicenseResponse {
+  @ApiProperty({ type: [BulkLicenseResponse] }) data?: BulkLicenseResponse;
+  @ApiProperty() status: boolean;
+  @ApiProperty()message: string;
+  @ApiProperty() error: boolean;
+  @ApiProperty() code:number;
+}
+
+
+export class UpdateResellPolicyResponse {
+  @ApiProperty({ type: [ResellPolicyResponse] }) data?: ResellPolicyResponse;
+  @ApiProperty() status: boolean;
+  @ApiProperty()message: string;
+  @ApiProperty() error: boolean;
+  @ApiProperty() code:number;
+}
+
+
+
+
+

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsInt, IsString, IsEnum, Min, IsNotEmpty, IsEmail, Matches } from 'class-validator';
+import { IsOptional, IsInt, IsString, IsEnum, Min, IsNotEmpty, IsEmail, Matches, IsArray,  IsNumber, ValidateNested} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ListParamsDto {
@@ -55,4 +55,55 @@ export class CreatePartnerDto {
    @ApiProperty()
    @IsEnum(['Reseller', 'Bulk Buyer', 'Both'])
    role: 'Reseller' | 'Bulk Buyer' | 'Both';
+}
+
+
+export class UpdateBulkLicenseDto {
+  @ApiProperty()
+  @IsInt()
+  @Min(0)
+  premiumTotal: number;
+
+  @ApiProperty()
+  @IsInt()
+  @Min(0)
+  goldTotal: number;
+}
+
+
+class PremiumPolicyDto {
+  @ApiProperty()
+  @IsNumber()
+  base: number;
+  
+  @ApiProperty()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  discountedBands: number[];
+}
+
+class GoldPolicyDto {
+  @ApiProperty()
+  @IsNumber()
+  base: number;
+  
+  @ApiProperty()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  discountedBands: number[];
+}
+
+export class UpdateResellPolicyDto {
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PremiumPolicyDto)
+  premium?: PremiumPolicyDto;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GoldPolicyDto)
+  gold?: GoldPolicyDto;
 }

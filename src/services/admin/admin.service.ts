@@ -37,7 +37,7 @@ export class AdminService {
     }
 
     // Prepare JWT payload
-    const payload = { sub: admin.id, email: admin.email, role: admin.role };
+    const payload = { id: admin.id, email: admin.email, role: admin.role, access:'salse_admin' };
 
     // Generate signed JWT
     const token = this.jwtService.sign(payload);

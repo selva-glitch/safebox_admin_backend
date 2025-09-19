@@ -2,18 +2,17 @@ import { Injectable, ConflictException, InternalServerErrorException  } from '@n
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, FindOptionsWhere } from 'typeorm';
 import { Partner } from '../../entities/partner/partner.entity';
-import { ListParamsDto, GetPartnerDto, CreatePartnerDto } from '../../validation/partner.validation';
-import {ListPartners, GetPartnerResponse, AddPartnerResponse, PartnerResponse} from '../../interfaces/partner.interface'
+import { ListParamsDto, GetPartnerDto, CreatePartnerDto, UpdateBulkLicenseDto, UpdateResellPolicyDto } from '../../validation/partner.validation';
+import {ListPartners, GetPartnerResponse, AddPartnerResponse, PartnerResponse, UpdateBulkLicenseResponse, UpdateResellPolicyResponse} from '../../interfaces/partner.interface'
 import {PartnerMapper} from '../../mappers/partner.mapper'
-
+import { AuditLog } from '../../entities/auditLog.entity'; 
 
 
 @Injectable()
 export class PartnerService {
-  constructor(
-    @InjectRepository(Partner)
-    private readonly partnerRepo: Repository<Partner>,
-  ) { }
+  constructor( @InjectRepository(Partner) private readonly partnerRepo: Repository<Partner>, @InjectRepository(AuditLog)  private auditLogRepo: Repository<AuditLog>){ 
+
+  }
 
   async create(data: Partial<Partner>) {
     const partner = this.partnerRepo.create(data);
@@ -109,4 +108,95 @@ export class PartnerService {
     const partnerResponse: PartnerResponse = PartnerMapper.toResponse(partnerDetails);
     return{status: true,message: 'Partner created successfully',error: false,code: 200, data :partnerResponse };
   }
+
+  async updateBulkLicense(id: number, userId: number, dto: UpdateBulkLicenseDto): Promise<UpdateBulkLicenseResponse>{
+    const partner = await this.partnerRepo.findOne({ where: { id } });
+
+    if (!partner) return{status: false,message: 'Partner not found',error: true,code: 404};
+
+    if (partner.role !== 'Bulk Buyer' && partner.role !== 'Both') {
+      return{status: false,message: 'Partner role does not allow bulk license setup',error: true,code: 404};
+    }
+
+    const oldValues = {
+      premiumTotal: partner.bulkLicense?.premiumTotal || 0,
+      goldTotal: partner.bulkLicense?.goldTotal || 0,
+    };
+
+    partner.bulkLicense = {
+      ...partner.bulkLicense,
+      premiumTotal: dto.premiumTotal,
+      goldTotal: dto.goldTotal,
+    };
+
+    await this.partnerRepo.save(partner);
+
+    // Audit logging
+    if (oldValues.premiumTotal !== dto.premiumTotal) {
+      await this.auditLogRepo.save(
+        this.auditLogRepo.create({
+          userId,
+          partnerId: partner.id,
+          action: 'Bulk License Update',
+          changes: {
+            field: 'premiumTotal',
+            oldValue: oldValues.premiumTotal,
+            newValue: dto.premiumTotal,
+          },
+        }),
+      );
+    }
+
+    if (oldValues.goldTotal !== dto.goldTotal) {
+      await this.auditLogRepo.save(
+        this.auditLogRepo.create({
+          userId,
+          partnerId: partner.id,
+          action: 'Bulk License Update',
+          changes: {
+            field: 'goldTotal',
+            oldValue: oldValues.goldTotal,
+            newValue: dto.goldTotal,
+          },
+        }),
+      );
+    }
+    return{status: true,message: 'Bulk license updated successfully',error: false,code: 200, data :partner.bulkLicense };
+  }
+
+
+  // service/partner.service.ts
+async updateResellPolicy( partnerId: number, userId: number, dto: UpdateResellPolicyDto): Promise<UpdateResellPolicyResponse> {
+  const partner = await this.partnerRepo.findOne({ where: { id: partnerId } });
+  if (!partner) return{status: false,message: 'Partner not found',error: true,code: 404};
+
+  if (partner.role !== 'Reseller' && partner.role !== 'Both') {
+
+     return{status: false,message: 'Partner role does not allow resell policy setup',error: true,code: 404};
+  }
+
+ // Only update provided fields
+  if (dto.premium) {
+    partner.resellPolicy = {
+      ...partner.resellPolicy,
+      premium: {
+        base: dto.premium.base,
+        discountedBands: dto.premium.discountedBands || [],
+      },
+    };
+  }
+
+  if (dto.gold) {
+    partner.resellPolicy = {
+      ...partner.resellPolicy,
+      gold: {
+        base: dto.gold.base ?? 0,
+        discountedBands: dto.gold.discountedBands || [],
+      },
+    };
+  }
+  await this.partnerRepo.save(partner);
+  return{status: true,message: 'Bulk license updated successfully',error: false,code: 200, data :partner.resellPolicy };
+}
+
 }
